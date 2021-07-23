@@ -1,6 +1,6 @@
 import './sass/main.scss';
 import getRefs from './js/img-refs';
-import ImageApiService from './js/img-lib';
+import ApiImgService from './js/img-lib';
 import './js/lightbox';
 import imgCardTpl from './templates/img-card.hbs';
 import Notiflix from 'notiflix';
@@ -9,12 +9,12 @@ const refs = getRefs();
 const apiImgService = new ApiImgService();
 
 refs.form.addEventListener('submit', onImgSearch);
-refs.loadBtn.addEventListener('submit', onImgLoad);
+refs.loadBtn.addEventListener('click', onImgLoad);
 
 async function onImgSearch(evt) {
   evt.preventDefault();
   apiImgService.resetPage();
-  refs.imgBox.innerHTML = '';
+  clearImgBox();
   //loadBtn.hide()
   refs.loadBtn.classList.add('hidden');
 
@@ -26,16 +26,14 @@ async function onImgSearch(evt) {
   /*
 loadBtn.show();
     apiImgService.defaultPage();
-    fetchImgCards();
-    refs.ingBox.innerHTML = '';
+    fetchImages();
+    refs.imgBox.innerHTML = '';
 }
 */
   try {
     const result = await apiImgService.fetchImages();
 
-    refs.imgBox.insertAdjacentHTML('beforeend', imgCardTpl(data));
-
-    Notiflix.Notify.success(`Hooray! We found ${result.totalHits} images.`);
+    ImgMarkup(result.hits);
 
     if (result.hits.length === 0) {
       refs.loadBtn.classList.add('hidden');
@@ -44,6 +42,7 @@ loadBtn.show();
       );
       return;
     }
+    Notiflix.Notify.success(`Hooray! We found ${result.totalHits} images.`);
 
     refs.loadBtn.classList.remove('hidden');
   } catch (error) {
@@ -55,14 +54,26 @@ async function onImgLoad() {
   try {
     const result = await apiImgService.fetchImages();
 
-    if (refs.imageContainer.querySelectorAll('.photo-card').length === result.totalHits) {
-      refs.loadBtn.style.display = 'none';
-
-      Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
+    if (refs.imgBox.querySelectorAll('.photo-card').length === result.totalHits) {
+      getTotalImgCount();
     } else {
-      refs.imgBox.insertAdjacentHTML('beforeend', imgCardTpl(data));
+      ImgMarkup(result.hits);
     }
   } catch (error) {
     console.log(error);
   }
+}
+
+function ImgMarkup(data) {
+  refs.imgBox.insertAdjacentHTML('beforeend', imgCardTpl(data));
+}
+
+function clearImgBox() {
+  refs.imgBox.innerHTML = '';
+}
+
+function getTotalImgCount() {
+  refs.loadBtn.style.display = 'none';
+
+  Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
 }
