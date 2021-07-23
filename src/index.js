@@ -1,7 +1,7 @@
 import './sass/main.scss';
 import getRefs from './js/img-refs';
 import ApiImgService from './js/img-lib';
-import './js/lightbox';
+// import './js/lightbox';
 import imgCardTpl from './templates/img-card.hbs';
 import Notiflix from 'notiflix';
 
