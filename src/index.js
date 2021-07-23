@@ -43,6 +43,7 @@ loadBtn.show();
       return;
     }
     Notiflix.Notify.success(`Hooray! We found ${result.totalHits} images.`);
+    // lightbox.refresh();
 
     refs.loadBtn.classList.remove('hidden');
   } catch (error) {
@@ -53,6 +54,7 @@ loadBtn.show();
 async function onImgLoad() {
   try {
     const result = await apiImgService.fetchImages();
+    // lightbox.refresh();
 
     if (refs.imgBox.querySelectorAll('.photo-card').length === result.totalHits) {
       getTotalImgCount();
